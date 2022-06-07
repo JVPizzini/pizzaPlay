@@ -3,8 +3,10 @@
     "name": "pizzaPlay",
     "slug": "pizzaPlay",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./src/assets/iphone-preview.png",
+      "backgroundColor": "#2152cf"
+    }
   }
 }
