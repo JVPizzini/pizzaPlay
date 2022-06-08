@@ -3,10 +3,10 @@ import { TextInputProps } from 'react-native';
 
 import { Container, TypeProps } from './styles';
 
-type Props = TextInputProps & {
+interface Props extends TextInputProps {
   type?: TypeProps;
-};
+}
 
 export function Input({ type = 'primary', ...rest }: Props) {
-  return <Container type={type} {...rest}></Container>;
+  return <Container type={type} {...rest} />;
 }

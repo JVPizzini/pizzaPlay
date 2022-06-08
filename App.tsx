@@ -17,6 +17,7 @@ import {
 //screens
 import { SignIn } from '@screens/SignIn';
 import { InputForm } from '@components/InputForm';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   SplashScreen.preventAutoHideAsync();
@@ -32,12 +33,13 @@ export default function App() {
 
   SplashScreen.hideAsync();
   return (
-    <ThemeProvider theme={theme}>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
-      <AuthProvider>
-        <SignIn />
-  
-      </AuthProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={theme}>
+        <StatusBar style="light" translucent backgroundColor="transparent" />
+        <AuthProvider>
+          <SignIn />
+        </AuthProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -16,9 +16,10 @@ interface Props extends TextInputProps {
   name: string;
   error: string;
   type: TypeProps;
+
 }
 
-export function InputForm({ control, name, error, type, ...rest }: Props) {
+export function InputForm({ control, name, error, type,...rest }: Props) {
   return (
     <Container>
       <Controller
@@ -29,13 +30,15 @@ export function InputForm({ control, name, error, type, ...rest }: Props) {
             value={value}
             {...rest}
             // placeholderTextColor={theme.colors.text}
-            selectionColor={theme.colors.dark_2}
+            selectionColor={theme.colors.shape}
             type={type}
+
           />
         )}
         name={name}
       />
       {error && <Error>{error}</Error>}
+      
     </Container>
   );
 }

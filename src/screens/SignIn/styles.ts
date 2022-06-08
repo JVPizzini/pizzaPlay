@@ -38,7 +38,6 @@ export const Brand = styled.Image.attrs({
 export const ForgotPasswordButton = styled.TouchableOpacity`
   align-self: flex-end;
   margin: 10px 10px;
-  
 `;
 
 export const ForgotPasswordLabel = styled.Text`
@@ -48,6 +47,8 @@ export const ForgotPasswordLabel = styled.Text`
     color: ${theme.colors.shape};
   `}
 `;
+
+export const Form = styled.View``;
 
 export const Container = styled(LinearGradient).attrs(({ theme }) => ({
   colors: theme.colors.gradient,

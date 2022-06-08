@@ -1,49 +1,89 @@
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface User {
+  email: string;
+  password: string;
+}
 
 type AuthContextDate = {
   signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
   isLoggin: boolean;
+  user: User;
 };
 
 type AuthProviderProps = {
   children: ReactNode;
 };
 
+const USER_COLLECTION = '@pizzaply:user';
+
 export const AuthContext = createContext({} as AuthContextDate);
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggin, setIsloggin] = useState(false);
 
+  const [user, setUser] = useState<User>({} as User);
+
   async function signIn(email: string, password: string) {
-    if (!email || !password) {
-      return Alert.alert('login', 'Please, correctly fill in the login fields 😉');
-    }
+    const user = {
+      email: email,
+      password: password,
+    };
 
-    if (email != 'admin') {
-      return Alert.alert('login', 'sorry but your credentials are wrong 😢');
-    }
-
-    if (password != 'bookplay') {
+    if (user.email != 'admin' || user.password != 'bookplay') {
       return Alert.alert('login', 'sorry but your credentials are wrong 😢');
     }
 
     try {
       setIsloggin(true);
+
+      await AsyncStorage.setItem(USER_COLLECTION, JSON.stringify(user));
     } catch (error) {
       console.log(error);
     } finally {
       setTimeout(() => {
         setIsloggin(false);
+        Alert.alert('login', 'Entrou 😉');
       }, 3000);
     }
   }
+
+  async function loadUserStorageDate() {
+    setIsloggin(true);
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION);
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser) as User;
+      console.log(userData);
+      setUser(userData);
+    }
+    setIsloggin(false);
+  }
+
+  async function signOut() {
+    await AsyncStorage.removeItem(USER_COLLECTION);
+    setUser({} as User);
+  }
+
+  async function forgotEmail() {
+    const passwaord = await AsyncStorage.getItem(USER_COLLECTION);
+
+  }
+
+  useEffect(() => {
+    loadUserStorageDate();
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         signIn,
+        signOut,
         isLoggin,
+        user,
       }}
     >
       {children}

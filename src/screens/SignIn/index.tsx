@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '@hooks/auth';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 //Components
 import { Input } from '@components/Input';
@@ -17,60 +19,92 @@ import {
   Brand,
   ForgotPasswordButton,
   ForgotPasswordLabel,
+  Form,
 } from './styles';
 
 //assets
 import bookplay from '@assets/bookplay.png';
 
+//interface and types
+interface FormData {
+  [email: string]: string;
+}
+
 export function SignIn() {
+  const schema = Yup.object().shape({
+    email: Yup.string().required('The email is required'),
+    password: Yup.string().required('The password is required'),
+  });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const { signIn, isLoggin } = useAuth();
+  const { signIn, isLoggin, signOut } = useAuth();
 
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  async function handleSignIn(form: FormData) {
+    const user = {
+      email: form.email,
+      password: form.password,
+    };
 
-  async function handleSignIn(email: string, password: string) {
-    signIn(email, password);
+    try {
+      signIn(user.email, user.password);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(`Couldn't signin, email or password incorrect`);
+    }
   }
   return (
-    <Container>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Brand source={bookplay} />
-        <Content>
-          <Title>Login</Title>
-          {/* <Input placeholder="E-mail" type="secundary" autoCorrect={false} autoCapitalize="none" />
-          <Input placeholder="Senha" type="secundary" secureTextEntry /> */}
-          <InputForm
-            name="Email"
-            control={control}
-            placeholder="Email"
-            autoCapitalize="sentences"
-            autoCorrect={false}
-            error={errors.name && errors.name.message}
-            type="primary"
-          />
-          <InputForm
-            name="Password"
-            control={control}
-            placeholder="Password"
-            autoCapitalize="sentences"
-            autoCorrect={false}
-            error={errors.name && errors.name.message}
-            secureTextEntry
-            type="primary"
-          />
-          <ForgotPasswordButton>
-            <ForgotPasswordLabel>forgot password?</ForgotPasswordLabel>
-          </ForgotPasswordButton>
-          <Button title="SignIn" type="primary" isLoading={true} />
-        </Content>
-      </KeyboardAvoidingView>
-    </Container>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      containerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
+    >
+      <Container>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <Brand source={bookplay} />
+          <Content>
+            <Title>Login</Title>
+
+            <Form>
+              <InputForm
+                name="email"
+                control={control}
+                placeholder="Email"
+                autoCapitalize="sentences"
+                autoCorrect={false}
+                type="primary"
+                error={errors.email && errors.email.message}
+              />
+              <InputForm
+                name="password"
+                control={control}
+                placeholder="Password"
+                autoCapitalize="sentences"
+                autoCorrect={false}
+                secureTextEntry
+                type="primary"
+                error={errors.password && errors.password.message}
+              />
+              <ForgotPasswordButton>
+                <ForgotPasswordLabel>forgot password?</ForgotPasswordLabel>
+              </ForgotPasswordButton>
+              <Button
+                title="SignIn"
+                type="primary"
+                isLoading={isLoggin}
+                onPress={handleSubmit(handleSignIn)}
+              />
+            </Form> 
+          </Content>
+        </KeyboardAvoidingView>
+      </Container>
+    </TouchableWithoutFeedback>
   );
 }
