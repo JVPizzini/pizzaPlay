@@ -3,6 +3,7 @@ import theme from './src/theme';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from 'styled-components/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 //hooks
 import { AuthProvider } from '@hooks/auth';
@@ -16,8 +17,7 @@ import {
 
 //screens
 import { SignIn } from '@screens/SignIn';
-import { InputForm } from '@components/InputForm';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Product } from '@screens/Product';
 
 export default function App() {
   SplashScreen.preventAutoHideAsync();
@@ -37,7 +37,8 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <StatusBar style="light" translucent backgroundColor="transparent" />
         <AuthProvider>
-          <SignIn />
+          {/* <SignIn /> */}
+          <Product />
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

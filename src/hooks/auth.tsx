@@ -10,8 +10,10 @@ interface User {
 type AuthContextDate = {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  forgotEmail: () => Promise<void>;
   isLoggin: boolean;
   user: User;
+  password: string;
 };
 
 type AuthProviderProps = {
@@ -26,6 +28,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggin, setIsloggin] = useState(false);
 
   const [user, setUser] = useState<User>({} as User);
+  const [password, setpassword] = useState('');
 
   async function signIn(email: string, password: string) {
     const user = {
@@ -57,7 +60,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     if (storedUser) {
       const userData = JSON.parse(storedUser) as User;
-      console.log(userData);
+      // console.log(userData);
       setUser(userData);
     }
     setIsloggin(false);
@@ -69,8 +72,17 @@ function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function forgotEmail() {
-    const passwaord = await AsyncStorage.getItem(USER_COLLECTION);
+    setIsloggin(true);
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION);
 
+    const userData = storedUser && (JSON.parse(storedUser) as User);
+
+    if (userData) {
+      Alert.alert(`Password: ${userData.password}💙`);
+    } else {
+      Alert.alert(`Password: There isn't user logged in 😢`);
+    }
+    setIsloggin(false);
   }
 
   useEffect(() => {
@@ -84,6 +96,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         signOut,
         isLoggin,
         user,
+        forgotEmail,
+        password,
       }}
     >
       {children}

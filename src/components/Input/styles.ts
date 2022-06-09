@@ -2,17 +2,18 @@ import styled, { css } from 'styled-components/native';
 import { TextInput, TextInputProps } from 'react-native';
 
 export type TypeProps = 'primary' | 'secundary';
+// interface Props extends TextInputProps {
+//   type?: TypeProps;
+// }
 
-type Props = TextInputProps & {
-  type: TypeProps;
-};
+import { Props } from './';
 
 export const Container = styled(TextInput).attrs<Props>(({ theme, type }) => ({
-  placeholderTextColor: type === 'primary' ? theme.colors.shape : theme.colors.bookplay_New,
+  placeholderTextColor: type === 'primary' ? theme.colors.shape : theme.colors.background,
 }))<Props>`
   /* flex: 1; */
   width: 100%;
-  height: 56px;
+
   background-color: transparent;
   border-radius: 12px;
   font-size: 14px;
@@ -22,7 +23,7 @@ export const Container = styled(TextInput).attrs<Props>(({ theme, type }) => ({
 
   ${({ theme, type }) => css`
     font-family: ${theme.fonts.regular};
-    border: 1px solid ${theme.colors.shape};
-    color: ${type === 'primary' ? theme.colors.shape : theme.colors.bookplay_New};
+    border: 1px solid ${type === 'primary' ? theme.colors.shape : theme.colors.background};
+    color: ${type === 'primary' ? theme.colors.shape : theme.colors.title};
   `}
 `;

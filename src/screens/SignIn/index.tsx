@@ -33,7 +33,7 @@ interface FormData {
 export function SignIn() {
   const schema = Yup.object().shape({
     email: Yup.string().required('The email is required'),
-    password: Yup.string().required('The password is required'),
+    password: Yup.string()
   });
 
   const {
@@ -45,7 +45,7 @@ export function SignIn() {
     resolver: yupResolver(schema),
   });
 
-  const { signIn, isLoggin, signOut } = useAuth();
+  const { signIn, isLoggin, signOut, forgotEmail } = useAuth();
 
   async function handleSignIn(form: FormData) {
     const user = {
@@ -59,6 +59,7 @@ export function SignIn() {
       console.log(error);
       Alert.alert(`Couldn't signin, email or password incorrect`);
     }
+    reset();
   }
   return (
     <TouchableWithoutFeedback
@@ -80,6 +81,7 @@ export function SignIn() {
                 autoCapitalize="sentences"
                 autoCorrect={false}
                 type="primary"
+                size={56}
                 error={errors.email && errors.email.message}
               />
               <InputForm
@@ -90,9 +92,10 @@ export function SignIn() {
                 autoCorrect={false}
                 secureTextEntry
                 type="primary"
+                size={56}
                 error={errors.password && errors.password.message}
               />
-              <ForgotPasswordButton>
+              <ForgotPasswordButton onPress={forgotEmail}>
                 <ForgotPasswordLabel>forgot password?</ForgotPasswordLabel>
               </ForgotPasswordButton>
               <Button
@@ -101,7 +104,7 @@ export function SignIn() {
                 isLoading={isLoggin}
                 onPress={handleSubmit(handleSignIn)}
               />
-            </Form> 
+            </Form>
           </Content>
         </KeyboardAvoidingView>
       </Container>

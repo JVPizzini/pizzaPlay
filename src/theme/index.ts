@@ -3,6 +3,7 @@ export default {
     bookplay_New: '#2152cf',
     bookplay_Old: '#36c2ff',
     gradient: ['#2152cf', '#36c2ff'],
+    gradient100: ['#2152cf', '#4596d2'],
 
     blue_light: '#99dfff',
     blue_medium100: '#4596d2',
@@ -21,6 +22,7 @@ export default {
     dark_1: '#010307',
     dark_2: '#333333',
     shape: '#f2f2f2',
+    // shape: '#e6e6e6',
     title: '#808080',
     text: '#a3a3a3',
     background: '#dcdcdc',
