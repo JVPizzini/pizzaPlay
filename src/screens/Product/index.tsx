@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { Keyboard, Platform, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Keyboard, Platform, ScrollView } from 'react-native';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, UseFormProps } from 'react-hook-form';
+import uuid from 'react-native-uuid';
 
 //components
 import { ButtomBack } from '@components/ButtomBack';
 import { Photo } from '@components/Photo';
-import { Input } from '@components/Input';
 import { Button } from '@components/Button';
+import { InputForm } from '@components/InputForm';
+import { Input } from '@components/Input';
+import { InputPrice } from '@components/InputPrice';
 
 //styled-components
 import {
@@ -25,29 +29,39 @@ import {
   Label,
   MaxCharacters,
 } from './styles';
-import { InputPrice } from '@components/InputPrice';
-import { useForm } from 'react-hook-form';
-import { InputForm } from '@components/InputForm';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //interface and types
-interface DataProps {
+interface Props {
   [name: string]: string;
+}
+interface ProductProps {
+  id: string;
+  name: string;
+  description: string;
+
+  priceP: string;
+  priceM: string;
+  priceG: string;
+
+  image: string;
 }
 
 //form schema
 const schema = Yup.object().shape({
   name: Yup.string().required(`People's name is required`),
   description: Yup.string(),
-  price: Yup.object({
-    priceP: Yup.string() /* .required('The value is required') */,
-    priceM: Yup.string() /* .required('The value is required') */,
-    priceG: Yup.string() /* .required('The value is required') */,
-  }),
-
-  image: Yup.string(),
+  priceP: Yup.string() /* .required('The value is required') */,
+  priceM: Yup.string() /* .required('The value is required') */,
+  priceG: Yup.string() /* .required('The value is required') */,
 });
 
 export function Product() {
+  const [dataProduct, setDataProduct] = useState<ProductProps>({} as ProductProps);
+  const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState('');
+  const PIZZAS_COLLECTION = '@pizzaplay:registers';
+
   const {
     control,
     handleSubmit,
@@ -56,7 +70,6 @@ export function Product() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const [image, setImage] = useState('');
 
   async function handlePickerImage() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -73,24 +86,40 @@ export function Product() {
     }
   }
 
-  async function handleRegister(form: DataProps) {
-    const newRegister = {
-      name: form.name,
-      description: form.description,
-      price: form.price,
-      // priceP: String(form.priceP),
-      // priceM: String(form.priceM),
-      // priceG: String(form.priceG),
+  async function handleRegister(form: Props) {
+    setIsLoading(true);
+
+    const { name, description, priceP, priceM, priceG } = form;
+
+    const newRegister: ProductProps = {
+      id: String(uuid.v4()),
+      name: name,
+      description: description,
+      priceP: priceP,
+      priceM: priceM,
+      priceG: priceG,
       image: image,
     };
 
     try {
-      console.log(newRegister);
+      const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
+      const currentData = data ? JSON.parse(data) : [];
+
+      const pizzaList = [...currentData, newRegister];
+      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList));
+
+      setDataProduct(newRegister);
     } catch (error) {
       console.log(error);
     }
 
+    setImage('');
     reset();
+
+    setTimeout(() => {
+      Alert.alert('Registred 😘');
+      setIsLoading(false);
+    }, 2000);
   }
 
   return (
@@ -124,6 +153,7 @@ export function Product() {
                 autoCapitalize="sentences"
                 autoCorrect
                 type="secundary"
+                value={dataProduct.name}
                 error={errors.name && errors.name.message}
               />
             </InputGroup>
@@ -133,16 +163,16 @@ export function Product() {
                 <Label>Descrição</Label>
                 <MaxCharacters>0 de 60 caracteres</MaxCharacters>
               </InputGroupHeader>
-
-              {/* <Input type="secundary" multiline maxLength={60} style={{ height: 55 }} /> */}
               <InputForm
                 name="description"
+                multiline
                 control={control}
                 placeholder="Description"
                 autoCapitalize="sentences"
                 autoCorrect={false}
                 type="secundary"
                 size={80}
+                value={dataProduct.description}
                 //  error={errors.email && errors.email.message}
               />
             </InputGroup>
@@ -157,6 +187,7 @@ export function Product() {
                 type="P"
                 size={80}
                 typeInput="numeric"
+                value={dataProduct.priceP}
               />
               <InputForm
                 name="priceM"
@@ -165,6 +196,7 @@ export function Product() {
                 type="M"
                 size={80}
                 typeInput="numeric"
+                value={dataProduct.priceM}
               />
               <InputForm
                 name="priceG"
@@ -173,9 +205,15 @@ export function Product() {
                 type="G"
                 size={80}
                 typeInput="numeric"
+                value={dataProduct.priceG}
               />
             </InputGroup>
-            <Button title="Register " type="secundary" onPress={handleSubmit(handleRegister)} />
+            <Button
+              title="Register "
+              type="secundary"
+              onPress={handleSubmit(handleRegister)}
+              isLoading={isLoading}
+            />
           </Form>
         </ScrollView>
       </Container>

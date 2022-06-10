@@ -20,7 +20,7 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-const USER_COLLECTION = '@pizzaply:user';
+const USER_COLLECTION = '@pizzaplay:user';
 
 export const AuthContext = createContext({} as AuthContextDate);
 
