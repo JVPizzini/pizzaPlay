@@ -10,14 +10,16 @@ module.exports = function (api) {
           root: ['./src'],
           extends: ['.ts', '.tsx', '.js', '.json'],
           alias: {
+            '@src': './src/',
             '@components': './src/components',
             '@screens': './src/screens',
             '@assets': './src/assets',
             '@hooks': './src/hooks',
             '@theme': './src/theme',
+            '@routes': './src/routes',
           },
         },
       ],
     ],
   };
-}; 
+};

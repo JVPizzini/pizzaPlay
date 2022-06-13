@@ -19,6 +19,7 @@ import {
 import { SignIn } from '@screens/SignIn';
 import { Product } from '@screens/Product';
 import { Home } from '@screens/Home';
+import { Routes } from '@routes/';
 
 export default function App() {
   SplashScreen.preventAutoHideAsync();
@@ -40,7 +41,8 @@ export default function App() {
         <AuthProvider>
           {/* <SignIn /> */}
           {/* <Product /> */}
-          <Home />
+          {/* <Home /> */}
+          <Routes />
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

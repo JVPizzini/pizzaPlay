@@ -20,6 +20,35 @@ export const GreetingEmoji = styled.Image`
   border-radius: 30px;
 `;
 
+export const MenuHeader = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 24px 0;
+  padding-bottom: 22px;
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.background};
+`;
+
+export const MenuTitle = styled.Text`
+  font-size: 20px;
+  line-height: 20px;
+
+  ${({ theme }) => css`
+    font-family: ${theme.fonts.regular};
+    color: ${theme.colors.text};
+  `}
+`;
+
+export const MenuItemsNumber = styled.Text`
+  font-size: 14px;
+
+  ${({ theme }) => css`
+    font-family: ${theme.fonts.regular};
+    color: ${theme.colors.text};
+  `}
+`;
+
 export const GreetingText = styled.Text`
   font-size: 20px;
 

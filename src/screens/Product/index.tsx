@@ -4,16 +4,15 @@ import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture
 import * as ImagePicker from 'expo-image-picker';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, UseFormProps } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import uuid from 'react-native-uuid';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 //components
 import { ButtomBack } from '@components/ButtomBack';
 import { Photo } from '@components/Photo';
 import { Button } from '@components/Button';
 import { InputForm } from '@components/InputForm';
-import { Input } from '@components/Input';
-import { InputPrice } from '@components/InputPrice';
 
 //styled-components
 import {
@@ -32,6 +31,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //interface and types
+import { ProductNavigationProps } from '@src/@types/navigation/navigation';
 interface Props {
   [name: string]: string;
 }
@@ -39,11 +39,9 @@ interface ProductProps {
   id: string;
   name: string;
   description: string;
-
   priceP: string;
   priceM: string;
   priceG: string;
-
   image: string;
 }
 
@@ -56,11 +54,15 @@ const schema = Yup.object().shape({
   priceG: Yup.string() /* .required('The value is required') */,
 });
 
+export const PIZZAS_COLLECTION = '@pizzaplay:registers';
+
 export function Product() {
   const [dataProduct, setDataProduct] = useState<ProductProps>({} as ProductProps);
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState('');
-  const PIZZAS_COLLECTION = '@pizzaplay:registers';
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { id } = route.params as ProductNavigationProps;
 
   const {
     control,
@@ -86,6 +88,10 @@ export function Product() {
     }
   }
 
+  function handleBack() {
+    navigation.goBack();
+  }
+
   async function handleRegister(form: Props) {
     setIsLoading(true);
 
@@ -108,7 +114,7 @@ export function Product() {
       const pizzaList = [...currentData, newRegister];
       await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList));
 
-      setDataProduct(newRegister);
+      // setDataProduct(newRegister);
     } catch (error) {
       console.log(error);
     }
@@ -122,6 +128,25 @@ export function Product() {
     }, 2000);
   }
 
+  async function loadDataItem() {
+    if (id) {
+      const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
+      const currentData = data ? JSON.parse(data) : [];
+
+      if (currentData) {
+        const currentDataFiltered = currentData.find((item: ProductProps) => item.id === id);
+        setDataProduct(currentDataFiltered);
+      }
+    }
+  }
+
+  useEffect(() => {
+    loadDataItem();
+    
+  }, [id]);
+  
+  
+
   return (
     <TouchableWithoutFeedback
       onPress={Keyboard.dismiss}
@@ -130,7 +155,7 @@ export function Product() {
     >
       <Container behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Header>
-          <ButtomBack />
+          <ButtomBack onPress={handleBack} />
           <Title>Register</Title>
           <TouchableOpacity>
             <DeleteLabel>Deletar</DeleteLabel>
@@ -138,14 +163,13 @@ export function Product() {
         </Header>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Upload>
-            <Photo uri={image} />
+            <Photo uri={dataProduct.image ? dataProduct.image : image} />
             <PickImageButton title={`Upload`} type="secundary" onPress={handlePickerImage} />
           </Upload>
 
           <Form>
             <InputGroup>
               <Label>Nome</Label>
-              {/* <Input type="secundary" /> */}
               <InputForm
                 name="name"
                 control={control}

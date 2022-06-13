@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import theme from '@theme/';
 import { TextInputProps, KeyboardType } from 'react-native';
 import { Control, Controller } from 'react-hook-form';
@@ -16,12 +16,13 @@ export interface Props extends TextInputProps {
   control: Control;
   name: string;
   error?: string;
-  type: TypeProps | 'P'|'M'|'G';
+  type: TypeProps | 'P' | 'M' | 'G';
   size?: number;
   typeInput?: KeyboardType;
 }
 
 export function InputForm({ control, name, error, type, size, typeInput, ...rest }: Props) {
+  
   return (
     <Container>
       <Controller
@@ -31,7 +32,6 @@ export function InputForm({ control, name, error, type, size, typeInput, ...rest
             <InputPrice
               {...rest}
               onChangeText={onChange}
-              value={value}
               selectionColor={theme.colors.shape}
               type={type}
               style={{ height: size }}
@@ -41,7 +41,6 @@ export function InputForm({ control, name, error, type, size, typeInput, ...rest
             <Input
               {...rest}
               onChangeText={onChange}
-              value={value}
               selectionColor={theme.colors.shape}
               type={type}
               style={{ height: size }}

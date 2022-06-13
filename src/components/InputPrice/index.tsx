@@ -13,6 +13,7 @@ interface Props extends TextInputProps {
 }
 
 export function InputPrice({ type, typInput, ...rest }: Props) {
+  
   return (
     <Container>
       <Size>
@@ -21,7 +22,7 @@ export function InputPrice({ type, typInput, ...rest }: Props) {
 
       <Label>R$</Label>
 
-      <Input keyboardType={typInput} {...rest} />
+      <Input keyboardType={typInput} {...rest}/>
     </Container>
   );
 }

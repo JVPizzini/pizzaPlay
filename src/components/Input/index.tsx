@@ -8,5 +8,6 @@ export interface Props extends TextInputProps {
 }
 
 export function Input({ type = 'primary', ...rest }: Props) {
-  return <Container type={type}  {...rest} />;
+  
+  return <Container type={type}  {...rest}/>;
 }
