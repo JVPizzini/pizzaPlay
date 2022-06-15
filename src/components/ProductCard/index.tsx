@@ -22,8 +22,10 @@ export type ProductProps = {
   name: string;
   description: string;
 };
-
 type Props = RectButtonProps & { data: ProductProps };
+
+//assets
+import { empty } from '@assets/empty.png';
 
 export function ProductCard({ data, ...rest }: Props) {
   const { colors } = useTheme();
@@ -31,7 +33,7 @@ export function ProductCard({ data, ...rest }: Props) {
   return (
     <Container>
       <Content {...rest}>
-        <Image source={{ uri: data.image }} />
+        <Image source={{ uri: data.image ? data.image : empty }} />
 
         <Details>
           <Identification>

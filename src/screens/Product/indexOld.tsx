@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Keyboard, Platform, ScrollView, View } from 'react-native';
+import { Alert, Keyboard, Platform, ScrollView } from 'react-native';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import uuid from 'react-native-uuid';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useAuth } from '@hooks/auth';
+import { /* useNavigation, */ useRoute } from '@react-navigation/native';
 
 //components
 import { ButtomBack } from '@components/ButtomBack';
 import { Photo } from '@components/Photo';
 import { Button } from '@components/Button';
-import { Input } from '@components/Input';
-import { InputPrice } from '@components/InputPrice';
+import { InputForm } from '@components/InputForm';
 
 //styled-components
 import {
@@ -41,10 +39,10 @@ interface ProductProps {
   id: string;
   name: string;
   description: string;
-  image: string;
   priceP: string;
   priceM: string;
   priceG: string;
+  image: string;
 }
 
 //form schema
@@ -61,10 +59,10 @@ export const PIZZAS_COLLECTION = '@pizzaplay:registers';
 export function Product() {
   const [dataProduct, setDataProduct] = useState<ProductProps>({} as ProductProps);
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const route = useRoute();
 
-  const [name, setName] = useState('');
+  const [nameid, setNameid] = useState('');
   const [description, setDescription] = useState('');
   const [priceP, setPriceP] = useState('');
   const [priceM, setPriceM] = useState('');
@@ -82,24 +80,6 @@ export function Product() {
     resolver: yupResolver(schema),
   });
 
-  function handleBack() {
-    navigation.goBack();
-  }
-  async function handleDeleteProduct() {
-    const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
-    const currentData = data ? JSON.parse(data) : [];
-    const filteredList = currentData.filter((item: ProductProps) => item.id != id);
-
-    try {
-      AsyncStorage.removeItem(PIZZAS_COLLECTION);
-      AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(filteredList));
-      Alert.alert('Deleted', 'Product deleted successfully');
-    } catch (error) {
-      return console.log(error);
-    }
-
-    navigation.goBack();
-  }
   async function handlePickerImage() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -114,21 +94,15 @@ export function Product() {
       }
     }
   }
-  async function handleRegister() {
-    if (!name.trim()) {
-      return Alert.alert('Register', 'Name please');
-    }
-    if (!description.trim()) {
-      return Alert.alert('Register', 'Name please');
-    }
-    if (!priceP.trim() || !priceM.trim() || !priceG.trim()) {
-      return Alert.alert('Register', 'We need prices please');
-    }
-    if (!image.trim()) {
-      return Alert.alert('Register', 'We need image');
-    }
 
+  function handleBack() {
+    // navigation.goBack();
+  }
+
+  async function handleRegister(form: Props) {
     setIsLoading(true);
+
+    const { name, description, priceP, priceM, priceG } = form;
 
     const newRegister: ProductProps = {
       id: String(uuid.v4()),
@@ -141,6 +115,7 @@ export function Product() {
     };
 
     try {
+  
       const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
       const currentData = data ? JSON.parse(data) : [];
 
@@ -151,23 +126,23 @@ export function Product() {
         }
       }
 
-      setDataProduct(newRegister);
       const pizzaList = newList ? [...newList, newRegister] : [...currentData, newRegister];
-      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList))
-      .then(() => navigation.navigate('home'))
-      .then(() => setIsLoading(false));
+      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList));
 
+      setDataProduct(newRegister);
     } catch (error) {
       console.log(error);
     }
 
-    setName('');
-    setDescription('');
-    setPriceP('');
-    setPriceM('');
-    setPriceG('');
     setImage('');
+    reset();
+
+    setTimeout(() => {
+      Alert.alert('Registred 😘');
+      setIsLoading(false);
+    }, 2000);
   }
+
   async function loadDataItem() {
     if (id) {
       const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
@@ -194,76 +169,87 @@ export function Product() {
         <Header>
           <ButtomBack onPress={handleBack} />
           <Title>Register</Title>
-          {id ? (
-            <TouchableOpacity onPress={handleDeleteProduct}>
-              <DeleteLabel>Deletar</DeleteLabel>
-            </TouchableOpacity>
-          ) : (
-            <View style={{ width: 20 }} />
-          )}
+          <TouchableOpacity>
+            <DeleteLabel>Deletar</DeleteLabel>
+          </TouchableOpacity>
         </Header>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Upload>
             <Photo uri={dataProduct.image ? dataProduct.image : image} />
-            {!id && <PickImageButton title="Upload" type="secundary" onPress={handlePickerImage} />}
+            <PickImageButton title="Upload" type="secundary" onPress={handlePickerImage} />
           </Upload>
 
           <Form>
             <InputGroup>
-              <Label>Name</Label>
-              <Input
-                type="secundary"
+              <Label>Nome</Label>
+              <InputForm
+                name="name"
+                control={control}
                 placeholder="Name"
-                onChangeText={setName}
+                autoCapitalize="sentences"
+                autoCorrect
+                type="secundary"
                 value={dataProduct.name}
+                error={errors.name && errors.name.message}
               />
             </InputGroup>
 
             <InputGroup>
               <InputGroupHeader>
-                <Label>Description</Label>
+                <Label>Descrição</Label>
                 <MaxCharacters>0 de 60 caracteres</MaxCharacters>
               </InputGroupHeader>
-              <Input
-                type="secundary"
-                placeholder="Description"
+              <InputForm
+                name="description"
                 multiline
-                maxLength={60}
-                style={{ height: 80 }}
-                onChangeText={setDescription}
+                control={control}
+                placeholder="Description"
+                autoCapitalize="sentences"
+                autoCorrect={false}
+                type="secundary"
+                size={80}
                 value={dataProduct.description}
+                //  error={errors.email && errors.email.message}
               />
             </InputGroup>
 
             <InputGroup>
               <Label>Tamanhos e preços</Label>
-              <InputPrice
-                typeInput="numeric"
+
+              <InputForm
+                name="priceP"
+                control={control}
+                autoCapitalize="sentences"
                 type="P"
-                onChangeText={setPriceP}
+                size={80}
+                typeInput="numeric"
                 value={dataProduct.priceP}
               />
-              <InputPrice
-                typeInput="numeric"
+              <InputForm
+                name="priceM"
+                control={control}
+                autoCapitalize="sentences"
                 type="M"
-                onChangeText={setPriceM}
+                size={80}
+                typeInput="numeric"
                 value={dataProduct.priceM}
               />
-              <InputPrice
-                typeInput="numeric"
+              <InputForm
+                name="priceG"
+                control={control}
+                autoCapitalize="sentences"
                 type="G"
-                onChangeText={setPriceG}
+                size={80}
+                typeInput="numeric"
                 value={dataProduct.priceG}
               />
             </InputGroup>
-            {!id && (
-              <Button
-                title="Register "
-                type="secundary"
-                onPress={handleRegister}
-                isLoading={isLoading}
-              />
-            )}
+            <Button
+              title="Register "
+              type="secundary"
+              onPress={handleSubmit(handleRegister)}
+              isLoading={isLoading}
+            />
           </Form>
         </ScrollView>
       </Container>

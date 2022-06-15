@@ -7,7 +7,6 @@ export interface Props extends TextInputProps {
   type?: TypeProps | 'P'|'M'|'G';
 }
 
-export function Input({ type = 'primary', ...rest }: Props) {
-  
-  return <Container type={type}  {...rest}/>;
+export function Input({ type = 'primary',...rest }: Props) {
+  return <Container type={type} {...rest} />;
 }

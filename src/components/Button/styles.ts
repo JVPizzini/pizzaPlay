@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components/native';
 import { RectButton } from 'react-native-gesture-handler';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export type TypeProps = 'primary' | 'secundary';
 
@@ -10,9 +11,9 @@ type ContainerProps = {
 
 export const Container = styled(RectButton)<ContainerProps>`
   flex: 1;
-  max-height: 56px;
-  min-height: 56px;
-  border-radius: 12px;
+  max-height: ${RFValue(56)}px;
+  min-height: ${RFValue(56)}px;
+  border-radius: ${RFValue(12)}px;
   justify-content: center;
   align-items: center;
 
@@ -21,7 +22,7 @@ export const Container = styled(RectButton)<ContainerProps>`
 `;
 
 export const Title = styled.Text`
-  font-size: 14px;
+  font-size: ${RFValue(14)}px;
 
   ${({ theme }) => css`
     color: ${theme.colors.shape};

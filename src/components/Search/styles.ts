@@ -23,7 +23,8 @@ export const InputArea = styled.View`
 
   ${({ theme }) => css`
     background-color: ${theme.colors.shape};
-    border: 1px solid ${theme.colors.background};
+    border: 1px solid  ${theme.colors.background}; 
+      
   `}
 `;
 

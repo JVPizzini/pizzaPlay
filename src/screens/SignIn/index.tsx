@@ -5,6 +5,7 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigation } from '@react-navigation/native';
 
 //Components
 import { Input } from '@components/Input';
@@ -31,8 +32,10 @@ interface FormData {
 }
 
 export function SignIn() {
+  const navigation = useNavigation();
+
   const schema = Yup.object().shape({
-    email: Yup.string().email().typeError('Invalid email type').required('The email is required'),
+    email: Yup.string().required('The email is required'),
     password: Yup.string(),
   });
 
@@ -55,12 +58,14 @@ export function SignIn() {
 
     try {
       signIn(user.email, user.password);
+      navigation.navigate('home');
     } catch (error) {
       console.log(error);
       Alert.alert(`Couldn't signin, email or password incorrect`);
     }
     reset();
   }
+
   return (
     <TouchableWithoutFeedback
       onPress={Keyboard.dismiss}

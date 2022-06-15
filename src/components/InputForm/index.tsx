@@ -19,18 +19,19 @@ export interface Props extends TextInputProps {
   type: TypeProps | 'P' | 'M' | 'G';
   size?: number;
   typeInput?: KeyboardType;
+  valor?: string;
 }
 
 export function InputForm({ control, name, error, type, size, typeInput, ...rest }: Props) {
-  
   return (
     <Container>
       <Controller
         control={control}
-        render={({ field: { onChange, value } }) =>
+        render={({ field: { onChange, value = rest.value } }) =>
           typeInput === 'numeric' ? (
             <InputPrice
               {...rest}
+              value={value}
               onChangeText={onChange}
               selectionColor={theme.colors.shape}
               type={type}
@@ -40,6 +41,7 @@ export function InputForm({ control, name, error, type, size, typeInput, ...rest
           ) : (
             <Input
               {...rest}
+              value={value}
               onChangeText={onChange}
               selectionColor={theme.colors.shape}
               type={type}

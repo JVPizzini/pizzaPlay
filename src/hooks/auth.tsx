@@ -21,12 +21,10 @@ type AuthProviderProps = {
 };
 
 const USER_COLLECTION = '@pizzaplay:user';
-
 export const AuthContext = createContext({} as AuthContextDate);
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggin, setIsloggin] = useState(false);
-
   const [user, setUser] = useState<User>({} as User);
   const [password, setpassword] = useState('');
 
@@ -49,7 +47,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setTimeout(() => {
         setIsloggin(false);
-        Alert.alert('login', 'Entrou 😉');
       }, 3000);
     }
   }
@@ -60,7 +57,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     if (storedUser) {
       const userData = JSON.parse(storedUser) as User;
-      
+
       setUser(userData);
     }
     setIsloggin(false);

@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Alert, FlatList, Keyboard, TouchableOpacity } from 'react-native';
 import { useTheme } from 'styled-components/native';
-import { Alert, FlatList, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PIZZAS_COLLECTION } from '@screens/Product';
+
+import { useAuth } from '@hooks/auth';
 
 //components
 import { Search } from '@components/Search';
@@ -18,39 +22,30 @@ import {
   MenuHeader,
   MenuItemsNumber,
   MenuTitle,
+  NewProductButton,
 } from './styles';
 
-interface ProductCardProps {
+//interface and types
+interface ProductProps {
   id: string;
   name: string;
   description: string;
   image: string;
-  priceG: string;
-  priceM: string;
   priceP: string;
+  priceM: string;
+  priceG: string;
 }
 
 //assets
 import gugu from '@assets/gugu.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PIZZAS_COLLECTION } from '@screens/Product';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export function Home() {
   const { colors } = useTheme();
-  const [dataList, setDataList] = useState<ProductCardProps[]>([]);
+  const [dataList, setDataList] = useState<ProductProps[]>([]);
   const [search, setSearch] = useState('');
   const navigation = useNavigation();
-
-  async function searchItems() {
-    const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
-    const currentData = data ? JSON.parse(data) : [];
-
-    if (currentData) {
-      setDataList(currentData);
-    } else {
-      Alert.alert('Não há produtos');
-    }
-  }
+  const { signOut } = useAuth();
 
   function handleSearch() {
     const dataFiltered = dataList.filter(
@@ -61,60 +56,85 @@ export function Home() {
     setDataList(dataFiltered);
   }
 
+  async function searchItems() {
+    // AsyncStorage.removeItem(PIZZAS_COLLECTION);
+    const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
+    const current = data ? JSON.parse(data) : [];
+
+    if (current) {
+      setDataList(current);
+    }
+  }
+
   function handleSearchClear() {
     setSearch('');
     searchItems();
+  }
+
+  function handleBack() {
+    console.log('passou home');
+    signOut();
+    navigation.goBack();
   }
 
   function handleOpenDetails(id: string) {
     navigation.navigate('product', { id });
   }
 
-  function teste() {
-    navigation.navigate('product',{});
+  function handleRegister() {
+    navigation.navigate('product', {});
   }
 
-  useEffect(() => {
-    searchItems();
-  }, [dataList]);
+  useFocusEffect(
+    useCallback(() => {
+      searchItems();
+    }, [])
+  );
 
   return (
-    <Container>
-      <Header>
-        <Greeting>
-          <GreetingEmoji source={gugu} />
-          <GreetingText>ola, admin</GreetingText>
-        </Greeting>
-        <TouchableOpacity onPress={teste}>
-          <MaterialIcons name="logout" color={colors.shape} size={24} />
-        </TouchableOpacity>
-      </Header>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      containerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
+    >
+      <Container>
+        <Header>
+          <Greeting>
+            <GreetingEmoji source={gugu} />
+            <GreetingText>ola, admin</GreetingText>
+          </Greeting>
+          <TouchableOpacity onPress={handleBack}>
+            <MaterialIcons name="logout" color={colors.shape} size={24} />
+          </TouchableOpacity>
+        </Header>
 
-      <Search
-        onChangeText={setSearch}
-        value={search}
-        dataSearched={search}
-        onSearch={handleSearch}
-        onClear={handleSearchClear}
-      />
-      <MenuHeader>
-        <MenuTitle>Cardápio</MenuTitle>
-        <MenuItemsNumber>{dataList.length}</MenuItemsNumber>
-      </MenuHeader>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={dataList}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProductCard data={item} onPress={() => handleOpenDetails(item.id)} />
-        )}
-        contentContainerStyle={{
-          paddingTop: 20,
-          paddingBottom: 125,
-          marginHorizontal: 24,
-          paddingHorizontal: 10,
-        }}
-      />
-    </Container>
+        <Search
+          onChangeText={setSearch}
+          value={search}
+          dataSearched={search}
+          onSearch={handleSearch}
+          onClear={handleSearchClear}
+        />
+        <MenuHeader>
+          <MenuTitle>Cardápio</MenuTitle>
+          <MenuItemsNumber>{dataList.length}</MenuItemsNumber>
+        </MenuHeader>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={dataList}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ProductCard data={item} onPress={() => handleOpenDetails(item.id)} />
+          )}
+          contentContainerStyle={{
+            paddingTop: 20,
+            paddingBottom: 125,
+            marginHorizontal: 24,
+            paddingHorizontal: 10,
+          }}
+        />
+        <NewProductButton onPress={handleRegister} title="Register" type="secundary" />
+      </Container>
+    </TouchableWithoutFeedback>
   );
 }

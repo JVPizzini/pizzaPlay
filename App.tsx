@@ -19,7 +19,9 @@ import {
 import { SignIn } from '@screens/SignIn';
 import { Product } from '@screens/Product';
 import { Home } from '@screens/Home';
-import { Routes } from '@routes/';
+import { Order } from '@screens/Order';
+import { Routes } from './src/routes';
+import { Orders } from '@screens/Orders';
 
 export default function App() {
   SplashScreen.preventAutoHideAsync();
@@ -39,10 +41,8 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <StatusBar style="light" translucent backgroundColor="transparent" />
         <AuthProvider>
-          {/* <SignIn /> */}
-          {/* <Product /> */}
-          {/* <Home /> */}
-          <Routes />
+          {/* <Routes /> */}
+          {<Orders />}
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

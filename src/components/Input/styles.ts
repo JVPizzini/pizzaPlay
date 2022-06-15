@@ -7,6 +7,7 @@ export type TypeProps = 'primary' | 'secundary';
 // }
 
 import { Props } from './';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export const Container = styled(TextInput).attrs<Props>(({ theme, type }) => ({
   placeholderTextColor: type === 'primary' ? theme.colors.shape : theme.colors.background,
@@ -15,10 +16,10 @@ export const Container = styled(TextInput).attrs<Props>(({ theme, type }) => ({
   width: 100%;
 
   background-color: transparent;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: ${RFValue(12)}px;
+  font-size: ${RFValue(14)}px;
   padding: 10px 20px;
-  margin-bottom: 16px;
+  margin-bottom: ${RFValue(16)}px;
 
   ${({ theme, type }) => css`
     font-family: ${theme.fonts.regular};

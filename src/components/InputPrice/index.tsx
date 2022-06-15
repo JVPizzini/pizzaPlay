@@ -9,20 +9,17 @@ import { Container, Input, Size, Label } from './styles';
 //interface and types
 interface Props extends TextInputProps {
   type: string;
-  typInput?: KeyboardType;
+  typeInput?: KeyboardType;
 }
 
-export function InputPrice({ type, typInput, ...rest }: Props) {
-  
+export function InputPrice({ type, typeInput, ...rest }: Props) {
   return (
     <Container>
       <Size>
         <Label>{type}</Label>
       </Size>
-
       <Label>R$</Label>
-
-      <Input keyboardType={typInput} {...rest}/>
+      <Input keyboardType={typeInput} {...rest} />
     </Container>
   );
 }
