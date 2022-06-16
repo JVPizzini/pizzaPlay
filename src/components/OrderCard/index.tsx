@@ -10,7 +10,6 @@ import {
   Name,
   StatusContainer,
   StatusLabel,
-  StatusTypesProps,
 } from './styles';
 
 //interfaces and types

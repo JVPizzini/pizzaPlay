@@ -45,7 +45,7 @@ export function Home() {
   const [dataList, setDataList] = useState<ProductProps[]>([]);
   const [search, setSearch] = useState('');
   const navigation = useNavigation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   function handleSearch() {
     const dataFiltered = dataList.filter(

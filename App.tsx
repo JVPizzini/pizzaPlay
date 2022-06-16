@@ -41,8 +41,8 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <StatusBar style="light" translucent backgroundColor="transparent" />
         <AuthProvider>
-          {/* <Routes /> */}
-          {<Orders />}
+          <Routes />
+          {/* {<Orders />} */}
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

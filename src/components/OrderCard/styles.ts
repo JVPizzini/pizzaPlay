@@ -35,7 +35,7 @@ export const Name = styled.Text`
 
   ${({ theme }) => css`
     font-family: ${theme.fonts.regular};
-    color: ${theme.colors.bookplay_Old};
+    color: ${theme.colors.title};
   `}
 `;
 
@@ -45,7 +45,7 @@ export const Description = styled.Text`
 
   ${({ theme }) => css`
     font-family: ${theme.fonts.regular};
-    color: ${theme.colors.bookplay_Old};
+    color: ${theme.colors.text};
   `}
 `;
 
@@ -59,18 +59,18 @@ export const StatusContainer = styled.View<StatusProps>`
   ${({ theme, status }) =>
     status === 'Doing' &&
     css`
-      background-color: ${theme.colors.attention_ligh};
+      background-color: ${theme.colors.error};
     `}
 
   ${({ theme, status }) =>
     status === 'Done' &&
     css`
-      background-color: ${theme.colors.attention_ligh};
+      background-color: ${theme.colors.sucess};
     `}
   ${({ theme, status }) =>
     status === 'Delivered' &&
     css`
-      background-color: ${theme.colors.attention_ligh};
+      background-color: ${theme.colors.bookplay_New};
     `}
 `;
 
@@ -81,6 +81,6 @@ export const StatusLabel = styled.Text<StatusProps>`
   ${({ status, theme }) =>
     css`
       font-family: ${theme.fonts.regular};
-      color: ${status === 'Delivered' ? theme.colors.sucess_light : theme.colors.shape};
+      color: ${status === 'Delivered' ? theme.colors.shape : theme.colors.shape};
     `}
 `;

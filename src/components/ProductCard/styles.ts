@@ -12,8 +12,8 @@ export const Content = styled(RectButton)`
 `;
 
 export const Image = styled.Image`
-  width:${RFValue(104)}px;
-  height: ${RFValue(104)}px;
+  width: 104px;
+  height: 104px;
   border-radius: 52px;
   margin-right: 20px;
 `;
@@ -24,7 +24,7 @@ export const Details = styled.View`
 
 export const Name = styled.Text`
   flex: 1;
-  font-size: ${RFValue(20)}px;
+  font-size: 20px;
 
   ${({ theme }) => css`
     font-family: ${theme.fonts.bold};
@@ -49,7 +49,7 @@ export const Line = styled.View`
   margin: 12px 0;
   margin-left: 124px;
 
-  background-color:${({ theme }) => theme.colors.background}
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 export const Identification = styled.View`

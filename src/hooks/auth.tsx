@@ -3,8 +3,9 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
-  email: string;
+  login: string;
   password: string;
+  permission: string;
 }
 
 type AuthContextDate = {
@@ -13,7 +14,6 @@ type AuthContextDate = {
   forgotEmail: () => Promise<void>;
   isLoggin: boolean;
   user: User;
-  password: string;
 };
 
 type AuthProviderProps = {
@@ -26,15 +26,16 @@ export const AuthContext = createContext({} as AuthContextDate);
 function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggin, setIsloggin] = useState(false);
   const [user, setUser] = useState<User>({} as User);
-  const [password, setpassword] = useState('');
+  const [password, setPassword] = useState('');
 
-  async function signIn(email: string, password: string) {
-    const user = {
-      email: email,
+  async function signIn(login: string, password: string) {
+    const user: User = {
+      login: login,
       password: password,
+      permission: login,
     };
 
-    if (user.email != 'admin' || user.password != 'bookplay') {
+    if (user.login != 'admin' || user.password != 'bookplay') {
       return Alert.alert('login', 'sorry but your credentials are wrong 😢');
     }
 
@@ -53,6 +54,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   async function loadUserStorageDate() {
     setIsloggin(true);
+    await AsyncStorage.removeItem(USER_COLLECTION);
     const storedUser = await AsyncStorage.getItem(USER_COLLECTION);
 
     if (storedUser) {
@@ -94,7 +96,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         isLoggin,
         user,
         forgotEmail,
-        password,
       }}
     >
       {children}

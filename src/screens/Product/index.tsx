@@ -91,8 +91,8 @@ export function Product() {
     const filteredList = currentData.filter((item: ProductProps) => item.id != id);
 
     try {
-      AsyncStorage.removeItem(PIZZAS_COLLECTION);
-      AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(filteredList));
+      await AsyncStorage.removeItem(PIZZAS_COLLECTION);
+      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(filteredList));
       Alert.alert('Deleted', 'Product deleted successfully');
     } catch (error) {
       return console.log(error);
