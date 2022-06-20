@@ -58,11 +58,15 @@ export function SignIn() {
 
     try {
       signIn(user.email, user.password);
-      navigation.navigate('home');
     } catch (error) {
       console.log(error);
       Alert.alert(`Couldn't signin, email or password incorrect`);
     }
+
+    // setTimeout(() => {
+    //   navigation.navigate('home');
+    // }, 3000);
+
     reset();
   }
 
@@ -77,7 +81,6 @@ export function SignIn() {
           <Brand source={bookplay} />
           <Content>
             <Title>Login</Title>
-
             <Form>
               <InputForm
                 name="email"

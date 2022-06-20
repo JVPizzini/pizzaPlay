@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface User {
   login: string;
   password: string;
-  permission: string;
+  isAdmin: boolean;
 }
 
 type AuthContextDate = {
@@ -29,32 +29,41 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [password, setPassword] = useState('');
 
   async function signIn(login: string, password: string) {
-    const user: User = {
-      login: login,
-      password: password,
-      permission: login,
-    };
+    const OldUser = await AsyncStorage.getItem(USER_COLLECTION);
 
-    if (user.login != 'admin' || user.password != 'bookplay') {
+    if (OldUser) {
+      await AsyncStorage.removeItem(USER_COLLECTION);
+    }
+
+    if (login != 'admin' && login != 'bookplay') {
       return Alert.alert('login', 'sorry but your credentials are wrong 😢');
     }
 
+    if (password != 'admin' && password != 'bookplay') {
+      return Alert.alert('password', 'sorry but your credentials are wrong 😢');
+    }
+
+    const user: User = {
+      login: login,
+      password: password,
+      isAdmin: login === 'admin',
+    };
+
     try {
       setIsloggin(true);
-
       await AsyncStorage.setItem(USER_COLLECTION, JSON.stringify(user));
     } catch (error) {
       console.log(error);
-    } finally {
-      setTimeout(() => {
-        setIsloggin(false);
-      }, 3000);
     }
+
+    setTimeout(() => {
+      loadUserStorageDate();
+      setIsloggin(false);
+    }, 3000);
   }
 
   async function loadUserStorageDate() {
     setIsloggin(true);
-    await AsyncStorage.removeItem(USER_COLLECTION);
     const storedUser = await AsyncStorage.getItem(USER_COLLECTION);
 
     if (storedUser) {

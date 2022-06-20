@@ -41,10 +41,12 @@ interface ProductProps {
   id: string;
   name: string;
   description: string;
+  size: {
+    p: string;
+    m: string;
+    g: string;
+  };
   image: string;
-  priceP: string;
-  priceM: string;
-  priceG: string;
 }
 
 //form schema
@@ -134,9 +136,11 @@ export function Product() {
       id: String(uuid.v4()),
       name: name,
       description: description,
-      priceP: priceP,
-      priceM: priceM,
-      priceG: priceG,
+      size: {
+        p: priceP,
+        m: priceM,
+        g: priceG,
+      },
       image: image,
     };
 
@@ -152,11 +156,12 @@ export function Product() {
       }
 
       setDataProduct(newRegister);
-      const pizzaList = newList ? [...newList, newRegister] : [...currentData, newRegister];
-      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList))
-      .then(() => navigation.navigate('home'))
-      .then(() => setIsLoading(false));
 
+      const pizzaList = newList ? [...newList, newRegister] : [...currentData, newRegister];
+
+      await AsyncStorage.setItem(PIZZAS_COLLECTION, JSON.stringify(pizzaList))
+        .then(() => navigation.navigate('home'))
+        .then(() => setIsLoading(false));
     } catch (error) {
       console.log(error);
     }
@@ -169,6 +174,18 @@ export function Product() {
     setImage('');
   }
   async function loadDataItem() {
+    const product: ProductProps = {
+      id: '',
+      name: '',
+      description: '',
+      size: {
+        p: '',
+        m: '',
+        g: '',
+      },
+      image: '',
+    };
+
     if (id) {
       const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
       const currentData = data ? JSON.parse(data) : [];
@@ -177,6 +194,8 @@ export function Product() {
         const currentDataFiltered = currentData.find((item: ProductProps) => item.id === id);
         setDataProduct(currentDataFiltered);
       }
+    } else {
+      setDataProduct(product);
     }
   }
 
@@ -215,7 +234,7 @@ export function Product() {
                 type="secundary"
                 placeholder="Name"
                 onChangeText={setName}
-                value={dataProduct.name}
+                value={name ? name : dataProduct.name}
               />
             </InputGroup>
 
@@ -231,7 +250,7 @@ export function Product() {
                 maxLength={60}
                 style={{ height: 80 }}
                 onChangeText={setDescription}
-                value={dataProduct.description}
+                value={description ? description : dataProduct.description}
               />
             </InputGroup>
 
@@ -241,19 +260,19 @@ export function Product() {
                 typeInput="numeric"
                 type="P"
                 onChangeText={setPriceP}
-                value={dataProduct.priceP}
+                value={priceP ? priceP : dataProduct.size?.p}
               />
               <InputPrice
                 typeInput="numeric"
                 type="M"
                 onChangeText={setPriceM}
-                value={dataProduct.priceM}
+                value={priceM ? priceM : dataProduct.size?.m}
               />
               <InputPrice
                 typeInput="numeric"
                 type="G"
                 onChangeText={setPriceG}
-                value={dataProduct.priceG}
+                value={priceG ? priceG : dataProduct.size?.g}
               />
             </InputGroup>
             {!id && (

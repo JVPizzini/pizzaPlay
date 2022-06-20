@@ -1,5 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, FlatList, Keyboard, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicatorComponent,
+  Alert,
+  FlatList,
+  Keyboard,
+  TouchableOpacity,
+} from 'react-native';
 import { useTheme } from 'styled-components/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -30,10 +36,12 @@ interface ProductProps {
   id: string;
   name: string;
   description: string;
+  size: {
+    p: string;
+    m: string;
+    g: string;
+  };
   image: string;
-  priceP: string;
-  priceM: string;
-  priceG: string;
 }
 
 //assets
@@ -71,14 +79,9 @@ export function Home() {
     searchItems();
   }
 
-  function handleBack() {
-    console.log('passou home');
-    signOut();
-    navigation.goBack();
-  }
-
   function handleOpenDetails(id: string) {
-    navigation.navigate('product', { id });
+    const route = user?.isAdmin ? 'product' : 'order';
+    navigation.navigate(route, { id });
   }
 
   function handleRegister() {
@@ -101,9 +104,9 @@ export function Home() {
         <Header>
           <Greeting>
             <GreetingEmoji source={gugu} />
-            <GreetingText>ola, admin</GreetingText>
+            <GreetingText>Olá, {user.login}</GreetingText>
           </Greeting>
-          <TouchableOpacity onPress={handleBack}>
+          <TouchableOpacity onPress={signOut}>
             <MaterialIcons name="logout" color={colors.shape} size={24} />
           </TouchableOpacity>
         </Header>
@@ -133,7 +136,9 @@ export function Home() {
             paddingHorizontal: 10,
           }}
         />
-        <NewProductButton onPress={handleRegister} title="Register" type="secundary" />
+        {user?.isAdmin && (
+          <NewProductButton onPress={handleRegister} title="Register" type="secundary" />
+        )}
       </Container>
     </TouchableWithoutFeedback>
   );

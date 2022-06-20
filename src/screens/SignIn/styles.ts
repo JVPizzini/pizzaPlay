@@ -29,7 +29,7 @@ export const Brand = styled.Image.attrs({
 })`
   /* width: 100%; */
   height: ${RFValue(100)}px;
-  margin: 50px 70px;
+  margin: ${RFValue(50)}px ${RFValue(70)}px;
   /* background-color: red;
   /* padding: 0 50px; */
   /* margin: 10px 50px; */
@@ -41,7 +41,7 @@ export const ForgotPasswordButton = styled.TouchableOpacity`
 `;
 
 export const ForgotPasswordLabel = styled.Text`
-  font-size: 14px;
+  font-size: ${RFValue(14)}px;
   ${({ theme }) => css`
     font-family: ${theme.fonts.regular};
     color: ${theme.colors.shape};
