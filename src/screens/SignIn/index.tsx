@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
+import { Control, Controller } from 'react-hook-form';
 
 //Components
 import { Input } from '@components/Input';

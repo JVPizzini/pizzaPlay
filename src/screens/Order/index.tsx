@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, Platform } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OrderNavigationProps } from '@src/@types/navigation/navigation';
 import { PIZZAS_COLLECTION } from '@screens/Product';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, Controller } from 'react-hook-form';
+import { useAuth } from '@hooks/auth';
 
 //components
 import { ButtomBack } from '@components/ButtomBack';
 import { RadioButtom } from '@components/RadioButtom';
 import { Input } from '@components/Input';
 import { ProductProps } from '@components/ProductCard';
+import { InputForm } from '@components/InputForm';
 
 //styled-components
 import {
@@ -25,10 +30,10 @@ import {
   Price,
   Sizes,
   Title,
+  Error,
 } from './styles';
 
 //assets
-import empty from '@assets/empty.png';
 import { Button } from '@src/components/Button';
 
 //interfaces and types
@@ -39,14 +44,45 @@ type DataItens = ProductProps & {
   };
 };
 
+interface OrderProps {
+  size: string;
+  quantity: number;
+  name: string;
+  amount: string;
+  tableNumber: string;
+  status: string;
+  waiter_id: string;
+  image: string;
+}
+interface Props {
+  [name: string]: string;
+}
+
 export function Order() {
   const [size, setSize] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dataProduct, setDataProduct] = useState<DataItens>({} as DataItens);
-  const [qtd, setQtd] = useState(0);
+  const [quantity, setQuantity] = useState(0);
   const [tableNumber, setTableNumber] = useState('');
+  const ORDERS_COLLECTION = '@pizzaplay:orders';
+  const { user } = useAuth();
 
-  const amount = size ? dataProduct.size[size] * qtd : '0,00';
+  const schema = Yup.object().shape({
+    size: Yup.string().required('The size is required'),
+    amount: Yup.string().required('The quantity is required'),
+    tableNumber: Yup.string().required('The table number is required'),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const amount = size ? String(dataProduct.size[size] * quantity) : '0,00';
   const route = useRoute();
   const { id } = route.params as OrderNavigationProps;
 
@@ -54,6 +90,41 @@ export function Order() {
 
   function handleBack() {
     navigation.goBack();
+  }
+
+  async function handleRegisterOrder(form: Props) {
+    const newOrder: OrderProps = {
+      size: size,
+      amount: amount,
+      tableNumber: tableNumber,
+      quantity: quantity,
+      name: dataProduct.name,
+      status: 'doing',
+      waiter_id: user?.login,
+      image: dataProduct.image,
+    };
+
+    setIsLoading(true);
+
+    try {
+      const data = await AsyncStorage.getItem(ORDERS_COLLECTION);
+      const currentData = data ? JSON.parse(data) : [];
+
+      const orderList = [...currentData, newOrder];
+      await AsyncStorage.setItem(ORDERS_COLLECTION, JSON.stringify(orderList));
+    } catch (error) {
+      console.log(error);
+    }
+
+    setSize('');
+    setQuantity(0);
+    setTableNumber('');
+
+    setTimeout(() => {
+      Alert.alert('Registred 😘');
+      setIsLoading(false);
+      navigation.goBack();
+    }, 2000);
   }
 
   async function loadDataItem() {
@@ -64,10 +135,10 @@ export function Order() {
       if (currentData) {
         const currentDataFiltered = currentData.find((item: ProductProps) => item.id === id);
         setDataProduct(currentDataFiltered);
-        console.log(currentDataFiltered);
       }
     }
   }
+
 
   useEffect(() => {
     loadDataItem();
@@ -99,26 +170,44 @@ export function Order() {
                 />
               ))}
             </Sizes>
-
             <FormRow>
               <InputGroup>
                 <Label>Table number</Label>
-                <Input type="secundary" keyboardType="numeric" onChangeText={setTableNumber} />
+                {/* <Input type="secundary" keyboardType="numeric" onChangeText={setTableNumber} /> */}
+                <InputForm
+                  name="tableNumber"
+                  control={control}
+                  placeholder="123"
+                  // autoCapitalize="sentences"
+                  // autoCorrect
+                  type="secundary"
+                  // value={dataProduct.name}
+                  error={errors.tableNumber && errors.tableNumber.message}
+                />
               </InputGroup>
               <InputGroup>
                 <Label>Amount</Label>
-                <Input
+                {/* <Input
                   type="secundary"
                   keyboardType="numeric"
-                  onChangeText={(value) => setQtd(Number(value))}
+                  onChangeText={(value) => setQuantity(Number(value))}
+                /> */}
+
+                <InputForm
+                  name="amount"
+                  control={control}
+                  placeholder="123"
+                  keyboardType="numeric"
+                  onChangeText={(value) => setQuantity(Number(value))}
+                  // value={(value) => setQuantity(Number(value))}
+                  type="secundary"
+                  error={errors.amount && errors.amount.message}
                 />
               </InputGroup>
             </FormRow>
-
             <Price>Price to R$ {amount}</Price>
-
             <Button
-              onPress={() => {}}
+              onPress={handleSubmit(handleRegisterOrder)}
               title="Register order"
               isLoading={isLoading}
               type="secundary"

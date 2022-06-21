@@ -127,7 +127,7 @@ export function Home() {
           data={dataList}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ProductCard data={item} onPress={() => handleOpenDetails(item.id)} />
+            <ProductCard  data={item} onPress={() => handleOpenDetails(item.id)} />
           )}
           contentContainerStyle={{
             paddingTop: 20,
