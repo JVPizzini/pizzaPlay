@@ -121,7 +121,7 @@ export function Product() {
       return Alert.alert('Register', 'Name please');
     }
     if (!description.trim()) {
-      return Alert.alert('Register', 'Name please');
+      return Alert.alert('Register', 'Description please');
     }
     if (!priceP.trim() || !priceM.trim() || !priceG.trim()) {
       return Alert.alert('Register', 'We need prices please');

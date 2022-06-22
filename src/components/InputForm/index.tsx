@@ -23,6 +23,7 @@ export interface Props extends TextInputProps {
 }
 
 export function InputForm({ control, name, error, type, size, typeInput, ...rest }: Props) {
+  
   return (
     <Container>
       <Controller
@@ -32,11 +33,13 @@ export function InputForm({ control, name, error, type, size, typeInput, ...rest
             <InputPrice
               {...rest}
               value={value}
-              onChangeText={onChange}
+              onChangeText={ onChange}
               selectionColor={theme.colors.shape}
               type={type}
               style={{ height: size }}
               keyboardType={typeInput}
+              onAccessibilityEscape={value}
+              
             />
           ) : (
             <Input

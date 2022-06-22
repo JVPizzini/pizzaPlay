@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Keyboard, Platform } from 'react-native';
+import { Alert, Keyboard, Platform, Text } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,15 +38,15 @@ import { Button } from '@src/components/Button';
 
 //interfaces and types
 import { PIZZA_TYPES } from '../../utils/pizzaTypes';
+import { useTheme } from 'styled-components';
 type DataItens = ProductProps & {
   size: {
     [key: string]: number;
   };
 };
-
 interface OrderProps {
   size: string;
-  quantity: number;
+  quantity: string;
   name: string;
   amount: string;
   tableNumber: string;
@@ -58,41 +58,55 @@ interface Props {
   [name: string]: string;
 }
 
+interface ErrorProps {
+  key: string;
+  msg: string;
+}
+
 export function Order() {
-  const [size, setSize] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataProduct, setDataProduct] = useState<DataItens>({} as DataItens);
-  const [quantity, setQuantity] = useState(0);
-  const [tableNumber, setTableNumber] = useState('');
   const ORDERS_COLLECTION = '@pizzaplay:orders';
-  const { user } = useAuth();
 
   const schema = Yup.object().shape({
-    size: Yup.string().required('The size is required'),
-    amount: Yup.string().required('The quantity is required'),
+    quantity: Yup.string().required('The quantity is required'),
     tableNumber: Yup.string().required('The table number is required'),
   });
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  const amount = size ? String(dataProduct.size[size] * quantity) : '0,00';
+  const [size, setSize] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataProduct, setDataProduct] = useState<DataItens>({} as DataItens);
+  const [quantity, setQuantity] = useState('');
+  const [tableNumber, setTableNumber] = useState('');
+  const navigation = useNavigation();
+  const [status, setStatus] = useState<ErrorProps[]>([]);
+  const { user } = useAuth();
   const route = useRoute();
   const { id } = route.params as OrderNavigationProps;
 
-  const navigation = useNavigation();
+  const amount = size && quantity ? String(dataProduct.size[size] * Number(quantity)) : '0,00';
 
   function handleBack() {
     navigation.goBack();
   }
 
-  async function handleRegisterOrder(form: Props) {
+  async function validate(obj: OrderProps) {
+    setStatus([]);
+
+    try {
+      await schema.validate(obj, { abortEarly: false });
+      return true;
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errors: ErrorProps[] = error.inner.map((e) => ({
+          key: String(e.path),
+          msg: e.message,
+        }));
+
+        setStatus(errors);
+      }
+    }
+  }
+
+  async function handleRegisterOrder() {
     const newOrder: OrderProps = {
       size: size,
       amount: amount,
@@ -103,6 +117,8 @@ export function Order() {
       waiter_id: user?.login,
       image: dataProduct.image,
     };
+
+    if (!(await validate(newOrder))) return;
 
     setIsLoading(true);
 
@@ -117,13 +133,13 @@ export function Order() {
     }
 
     setSize('');
-    setQuantity(0);
+    setQuantity('');
     setTableNumber('');
 
     setTimeout(() => {
       Alert.alert('Registred 😘');
       setIsLoading(false);
-      navigation.goBack();
+      navigation.navigate('home');
     }, 2000);
   }
 
@@ -138,7 +154,6 @@ export function Order() {
       }
     }
   }
-
 
   useEffect(() => {
     loadDataItem();
@@ -173,8 +188,18 @@ export function Order() {
             <FormRow>
               <InputGroup>
                 <Label>Table number</Label>
-                {/* <Input type="secundary" keyboardType="numeric" onChangeText={setTableNumber} /> */}
-                <InputForm
+                <Input
+                  type="secundary"
+                  keyboardType="numeric"
+                  placeholder="123"
+                  onChangeText={setTableNumber}
+                  value={tableNumber}
+                />
+                {!tableNumber &&
+                  status.map(
+                    (item) => item.key === 'tableNumber' && <Error key={item.key}>{item.msg}</Error>
+                  )}
+                {/* <InputForm
                   name="tableNumber"
                   control={control}
                   placeholder="123"
@@ -183,17 +208,22 @@ export function Order() {
                   type="secundary"
                   // value={dataProduct.name}
                   error={errors.tableNumber && errors.tableNumber.message}
-                />
+                /> */}
               </InputGroup>
               <InputGroup>
                 <Label>Amount</Label>
-                {/* <Input
+                <Input
                   type="secundary"
                   keyboardType="numeric"
-                  onChangeText={(value) => setQuantity(Number(value))}
-                /> */}
-
-                <InputForm
+                  placeholder="123"
+                  onChangeText={(value) => setQuantity(value)}
+                  value={quantity}
+                />
+                {!quantity &&
+                  status.map(
+                    (item) => item.key === 'quantity' && <Error key={item.key}>{item.msg}</Error>
+                  )}
+                {/* <InputForm
                   name="amount"
                   control={control}
                   placeholder="123"
@@ -202,12 +232,12 @@ export function Order() {
                   // value={(value) => setQuantity(Number(value))}
                   type="secundary"
                   error={errors.amount && errors.amount.message}
-                />
+                /> */}
               </InputGroup>
             </FormRow>
             <Price>Price to R$ {amount}</Price>
             <Button
-              onPress={handleSubmit(handleRegisterOrder)}
+              onPress={handleRegisterOrder}
               title="Register order"
               isLoading={isLoading}
               type="secundary"

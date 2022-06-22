@@ -82,9 +82,9 @@ export const Error = styled.Text`
   color: ${({ theme }) => theme.colors.error};
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(14)}px;
-  margin: -30px 10px 10px;
+  margin: -10px 10px 10px;
   overflow: scroll;
-  align-self: center;
+
 `;
 
 export const Header = styled(LinearGradient).attrs(({ theme }) => ({
