@@ -1,5 +1,6 @@
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled, { css } from 'styled-components/native';
+// import { getBottomSpace } from 'react-native-iphone-x-helper';
 
 //interfaces and types
 type TitleProps = {
@@ -14,7 +15,6 @@ export const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  /* background-color: red; */
 
   width: ${RFValue(100)}px;
   height: ${RFValue(50)}px;

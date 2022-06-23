@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useFocusEffect } from '@react-navigation/native';
+const { Navigator, Screen } = createBottomTabNavigator();
 
 //components
 import { Home } from '@screens/Home';
 import { Orders } from '@screens/Orders';
 import { BottomMenu } from '@components/BottomMenu';
 import { RFValue } from 'react-native-responsive-fontsize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { Navigator, Screen } = createBottomTabNavigator();
+//interfaces and types
+import { OrderProps } from '@components/OrderCard';
+
+import { ORDERS_COLLECTION } from '@screens/Order';
 
 export function UserTabRoutes() {
   const { colors } = useTheme();
+  const [newOrders, setNewOrders] = useState([]);
+
+  async function notificationNewOrders() {
+    const data = await AsyncStorage.getItem(ORDERS_COLLECTION);
+    const currentData = data ? JSON.parse(data) : [];
+    if (currentData) {
+      setNewOrders(currentData);
+    }
+  }
+
+  useEffect(() => {
+    notificationNewOrders();
+  }, []);
 
   return (
     <Navigator
@@ -39,7 +58,7 @@ export function UserTabRoutes() {
         component={Orders}
         options={{
           tabBarIcon: ({ color }) => (
-            <BottomMenu title="Production" color={color} notification="5" />
+            <BottomMenu title="Production" color={color} notification={String(newOrders.length)} />
           ),
         }}
       />

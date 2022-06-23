@@ -8,6 +8,13 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.shape};
 `;
 
+export const ContentLoading = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.shape};
+`;
+
 export const Title = styled.Text`
   font-size: 24px;
   text-align: center;

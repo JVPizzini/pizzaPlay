@@ -59,7 +59,7 @@ export const StatusContainer = styled.View<StatusProps>`
   ${({ theme, status }) =>
     status === 'Doing' &&
     css`
-      background-color: ${theme.colors.error};
+      background-color: ${theme.colors.attention_ligh};
     `}
 
   ${({ theme, status }) =>
@@ -70,7 +70,7 @@ export const StatusContainer = styled.View<StatusProps>`
   ${({ theme, status }) =>
     status === 'Delivered' &&
     css`
-      background-color: ${theme.colors.bookplay_New};
+      background-color: ${theme.colors.text};
     `}
 `;
 

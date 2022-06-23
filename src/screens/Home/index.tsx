@@ -54,6 +54,7 @@ export function Home() {
   const [search, setSearch] = useState('');
   const navigation = useNavigation();
   const { signOut, user } = useAuth();
+  const ORDERS_COLLECTION = '@pizzaplay:orders';
 
   function handleSearch() {
     const dataFiltered = dataList.filter(
@@ -66,6 +67,7 @@ export function Home() {
 
   async function searchItems() {
     // AsyncStorage.removeItem(PIZZAS_COLLECTION);
+    // AsyncStorage.removeItem(ORDERS_COLLECTION);
     const data = await AsyncStorage.getItem(PIZZAS_COLLECTION);
     const current = data ? JSON.parse(data) : [];
 
@@ -127,7 +129,7 @@ export function Home() {
           data={dataList}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <ProductCard  data={item} onPress={() => handleOpenDetails(item.id)} />
+            <ProductCard data={item} onPress={() => handleOpenDetails(item.id)} />
           )}
           contentContainerStyle={{
             paddingTop: 20,

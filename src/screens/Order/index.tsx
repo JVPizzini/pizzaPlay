@@ -6,16 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OrderNavigationProps } from '@src/@types/navigation/navigation';
 import { PIZZAS_COLLECTION } from '@screens/Product';
 import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '@hooks/auth';
+import uuid from 'react-native-uuid';
 
 //components
 import { ButtomBack } from '@components/ButtomBack';
 import { RadioButtom } from '@components/RadioButtom';
 import { Input } from '@components/Input';
 import { ProductProps } from '@components/ProductCard';
-import { InputForm } from '@components/InputForm';
 
 //styled-components
 import {
@@ -38,22 +36,24 @@ import { Button } from '@src/components/Button';
 
 //interfaces and types
 import { PIZZA_TYPES } from '../../utils/pizzaTypes';
-import { useTheme } from 'styled-components';
+import { OrderProps } from '@components/OrderCard';
+
 type DataItens = ProductProps & {
   size: {
     [key: string]: number;
   };
 };
-interface OrderProps {
-  size: string;
-  quantity: string;
-  name: string;
-  amount: string;
-  tableNumber: string;
-  status: string;
-  waiter_id: string;
-  image: string;
-}
+// export interface OrderProps {
+//   id: string;
+//   size: string;
+//   quantity: string;
+//   name: string;
+//   amount: string;
+//   tableNumber: string;
+//   status: string;
+//   waiter_id: string;
+//   image: string;
+// }
 interface Props {
   [name: string]: string;
 }
@@ -63,12 +63,12 @@ interface ErrorProps {
   msg: string;
 }
 
-export function Order() {
-  const ORDERS_COLLECTION = '@pizzaplay:orders';
+export const ORDERS_COLLECTION = '@pizzaplay:orders';
 
+export function Order() {
   const schema = Yup.object().shape({
-    quantity: Yup.string().required('The quantity is required'),
-    tableNumber: Yup.string().required('The table number is required'),
+    quantity: Yup.string().required('Quantity is required'),
+    tableNumber: Yup.string().required('Number is required'),
   });
 
   const [size, setSize] = useState('');
@@ -108,12 +108,13 @@ export function Order() {
 
   async function handleRegisterOrder() {
     const newOrder: OrderProps = {
+      id: String(uuid.v4()),
       size: size,
       amount: amount,
       tableNumber: tableNumber,
       quantity: quantity,
       name: dataProduct.name,
-      status: 'doing',
+      status: 'Doing',
       waiter_id: user?.login,
       image: dataProduct.image,
     };
@@ -199,16 +200,7 @@ export function Order() {
                   status.map(
                     (item) => item.key === 'tableNumber' && <Error key={item.key}>{item.msg}</Error>
                   )}
-                {/* <InputForm
-                  name="tableNumber"
-                  control={control}
-                  placeholder="123"
-                  // autoCapitalize="sentences"
-                  // autoCorrect
-                  type="secundary"
-                  // value={dataProduct.name}
-                  error={errors.tableNumber && errors.tableNumber.message}
-                /> */}
+        
               </InputGroup>
               <InputGroup>
                 <Label>Amount</Label>
@@ -223,16 +215,7 @@ export function Order() {
                   status.map(
                     (item) => item.key === 'quantity' && <Error key={item.key}>{item.msg}</Error>
                   )}
-                {/* <InputForm
-                  name="amount"
-                  control={control}
-                  placeholder="123"
-                  keyboardType="numeric"
-                  onChangeText={(value) => setQuantity(Number(value))}
-                  // value={(value) => setQuantity(Number(value))}
-                  type="secundary"
-                  error={errors.amount && errors.amount.message}
-                /> */}
+
               </InputGroup>
             </FormRow>
             <Price>Price to R$ {amount}</Price>

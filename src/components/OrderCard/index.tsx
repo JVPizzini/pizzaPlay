@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacityProps } from 'react-native';
+
 //components
 
 //styled-components
@@ -10,27 +11,37 @@ import {
   Name,
   StatusContainer,
   StatusLabel,
+  StatusTypesProps,
 } from './styles';
 
 //interfaces and types
 type Props = TouchableOpacityProps & {
   index: number;
+  data: OrderProps;
 };
+export interface OrderProps {
+  id: string;
+  size: string;
+  quantity: string;
+  name: string;
+  amount: string;
+  tableNumber: string;
+  status: StatusTypesProps;
+  waiter_id: string;
+  image: string;
+}
 
-//assets
-import empty from '@assets/empty.png';
-
-export function OrderCard({ index, ...rest }: Props) {
+export function OrderCard({ index, data, ...rest }: Props) {
   return (
-    <Container index={index}>
-      <Image source={empty} />
+    <Container index={index} {...rest}>
+      <Image source={{ uri: data.image }} />
 
-      <Name>teste nome</Name>
+      <Name>{data.name}</Name>
 
-      <Description> mesa 5 qtd: 1</Description>
+      <Description>{`Mesa ${data.tableNumber} | Qtd: ${data.quantity}`}</Description>
 
-      <StatusContainer status="Doing">
-        <StatusLabel status="Doing">Doing</StatusLabel>
+      <StatusContainer status={data.status}>
+        <StatusLabel status={data.status}>{data.status}</StatusLabel>
       </StatusContainer>
     </Container>
   );

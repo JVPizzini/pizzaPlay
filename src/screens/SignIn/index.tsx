@@ -63,11 +63,6 @@ export function SignIn() {
       console.log(error);
       Alert.alert(`Couldn't signin, email or password incorrect`);
     }
-
-    // setTimeout(() => {
-    //   navigation.navigate('home');
-    // }, 3000);
-
     reset();
   }
 

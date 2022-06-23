@@ -35,11 +35,11 @@ function AuthProvider({ children }: AuthProviderProps) {
       await AsyncStorage.removeItem(USER_COLLECTION);
     }
 
-    if (login != 'admin' && login != 'bookplay') {
+    if (login.toLowerCase() != 'admin' && login.toLowerCase() != 'bookplay') {
       return Alert.alert('login', 'sorry but your credentials are wrong 😢');
     }
 
-    if (password != 'admin' && password != 'bookplay') {
+    if (password.toLowerCase() != 'admin' && password.toLowerCase() != 'bookplay') {
       return Alert.alert('password', 'sorry but your credentials are wrong 😢');
     }
 
