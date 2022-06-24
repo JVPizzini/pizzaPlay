@@ -59,7 +59,8 @@ export const StatusContainer = styled.View<StatusProps>`
   ${({ theme, status }) =>
     status === 'Doing' &&
     css`
-      background-color: ${theme.colors.attention_ligh};
+      background-color: ${theme.colors.attention_superlight};
+      border: 1px solid ${theme.colors.attention};
     `}
 
   ${({ theme, status }) =>
@@ -81,6 +82,6 @@ export const StatusLabel = styled.Text<StatusProps>`
   ${({ status, theme }) =>
     css`
       font-family: ${theme.fonts.regular};
-      color: ${status === 'Delivered' ? theme.colors.shape : theme.colors.shape};
+      color: ${status != 'Doing' ? theme.colors.shape : theme.colors.attention};
     `}
 `;

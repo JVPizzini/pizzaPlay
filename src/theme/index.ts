@@ -18,6 +18,7 @@ export default {
 
     attention: '#ee9154',
     attention_ligh: '#f69e63',
+    attention_superlight: '#ffd699',
 
     dark_1: '#010307',
     dark_2: '#333333',

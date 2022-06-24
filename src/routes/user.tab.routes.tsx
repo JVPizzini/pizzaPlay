@@ -25,7 +25,10 @@ export function UserTabRoutes() {
     const data = await AsyncStorage.getItem(ORDERS_COLLECTION);
     const currentData = data ? JSON.parse(data) : [];
     if (currentData) {
-      setNewOrders(currentData);
+      const filteredList = currentData.filter((item: OrderProps) => item.status === 'Doing');
+      if (filteredList) {
+        setNewOrders(filteredList);
+      }
     }
   }
 
@@ -52,6 +55,7 @@ export function UserTabRoutes() {
         options={{
           tabBarIcon: ({ color }) => <BottomMenu title="List" color={color} />,
         }}
+        listeners={{ focus: () => notificationNewOrders() }}
       />
       <Screen
         name="orders"
